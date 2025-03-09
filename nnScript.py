@@ -137,26 +137,76 @@ def nnObjFunction(params, *args):
     % w2: matrix of weights of connections from hidden layer to output layers.
     %     w2(i, j) represents the weight of connection from unit j in hidden 
     %     layer to unit i in output layer."""
-
     n_input, n_hidden, n_class, training_data, training_label, lambdaval = args
+
 
     w1 = params[0:n_hidden * (n_input + 1)].reshape((n_hidden, (n_input + 1)))
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0
 
+
     # Your code here
-    #
-    #
-    #
-    #
-    #
+    n= training_data.shape[0]
+    training_data = np.hstack((training_data, np.ones((n, 1))))
+
+
+    z = np.dot(training_data, w1.T)
+    z = sigmoid(z)  
+    z = np.hstack((z, np.ones((n, 1))))
+
+
+    o=np.dot(z,w2.T)
+    o= sigmoid(o)
+
+
+  #what i did here was get the input and output layer activations^
+    y = np.zeros((n, n_class))  
+    for i in range(n):
+      y[i, int(training_label[i])] = 1
+
+
+  # this is for one hot encoding  ^
+
+
+    original_error = -np.sum(y * np.log(o) + (1 - y) * np.log(1 - o)) / n
+    w1_sum_squares = np.sum(w1[:, :n_input] ** 2)
+    w2_sum_squares = np.sum(w2[:, :n_hidden] ** 2)
+
+
+    regularization = (lambdaval / (2 * n)) * (w1_sum_squares + w2_sum_squares)
+   
+    obj_val = original_error + regularization
+
+
+    delta_o = o - y
+
+
+ 
+    delta_z = (1 - z) * z * np.dot(delta_o, w2)
+ 
+    delta_z = delta_z[:, :-1]
 
 
 
+
+
+
+    gradient_w1=np.dot(delta_z.T, training_data) / n
+    gradient_w2=np.dot(delta_o.T, z) / n
+
+
+    gradient_w1[:, :-1] += (lambdaval / n) * w1[:, :-1]
+    gradient_w2[:, :-1] += (lambdaval / n) * w2[:, :-1]
+
+
+   
+    #computing gradients and adding regulaiztion term^
+    # we do not want to include the bias term ^
     # Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     # you would use code similar to the one below to create a flat array
-    # obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    obj_grad = np.array([])
+    obj_grad = np.concatenate((gradient_w1.flatten(), gradient_w2.flatten()),0)
+   
+
 
     return (obj_val, obj_grad)
 
