@@ -2,6 +2,8 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import Variance
 
 
 def initializeWeights(n_in, n_out):
@@ -24,8 +26,7 @@ def initializeWeights(n_in, n_out):
 def sigmoid(z):
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
-
-    return  # your code here
+    return  1/(1 + np.exp(-z))   # your code here
 
 
 def preprocess():
@@ -33,33 +34,68 @@ def preprocess():
      Although this function doesn't have any input, you are required to load
      the MNIST data set from file 'mnist_all.mat'.
 
+
      Output:
-     train_data: matrix of training set. Each row of train_data contains 
+     train_data: matrix of training set. Each row of train_data contains
        feature vector of a image
      train_label: vector of label corresponding to each image in the training
        set
-     validation_data: matrix of training set. Each row of validation_data 
+     validation_data: matrix of training set. Each row of validation_data
        contains feature vector of a image
-     validation_label: vector of label corresponding to each image in the 
+     validation_label: vector of label corresponding to each image in the
        training set
-     test_data: matrix of training set. Each row of test_data contains 
+     test_data: matrix of training set. Each row of test_data contains
        feature vector of a image
      test_label: vector of label corresponding to each image in the testing
        set
 
+
      Some suggestions for preprocessing step:
      - feature selection"""
 
+
     mat = loadmat('mnist_all.mat')  # loads the MAT object as a Dictionary
 
-    # Split the training sets into two sets of 50000 randomly sampled training examples and 10000 validation examples. 
+    train_data_list= list()
+    train_label_list= list()
+    test_data_list= list()
+    test_label_list= list()
+
+    for digit in range(10):
+      train_key= 'train' + str(digit)
+      test_key ='test' + str(digit)
+      train_samples = mat[train_key]
+      test_samples=mat[test_key]
+      train_labels= np.full((train_samples.shape[0],1),digit )
+      test_labels= np.full((test_samples.shape[0],1), digit )
+
+      train_data_list.append(train_samples)
+      train_label_list.append(train_labels)
+      test_data_list.append(test_samples)
+      test_label_list.append(test_labels)
+
+    train_data = np.vstack(train_data_list) # to verticaly stack
+    train_label = np.vstack(train_label_list).flatten() #for 1D array
+    test_data = np.vstack(test_data_list)
+    test_label = np.vstack(test_label_list).flatten()
+
+
+
+
+    # Split the training sets into two sets of 50000 randomly sampled training examples and 10000 validation examples.
     # Your code here.
-    
+    train_data, validation_data, train_label, validation_label= train_test_split(train_data,train_label, test_size=10000/60000, random_state=0)
+
 
     # Feature selection
     # Your code here.
+    feature_selection = Variance(threshold=0.01)  
+    train_data = feature_selection.fit_transform(train_data)
+    validation_data = feature_selection.transform(validation_data)
+    test_data = feature_selection.transform(test_data)
 
     print('preprocess done')
+
 
     return train_data, train_label, validation_data, validation_label, test_data, test_label
 
