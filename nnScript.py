@@ -171,8 +171,11 @@ def nnPredict(w1, w2, data):
     % Output:
     % label: a column vector of predicted labels"""
 
-    labels = np.array([])
+    #labels = np.array([])
     # Your code here
+
+    bias = np.ones((data.shape[0],1))
+    data =np.hstack((bias,data))
     net_first = np.dot(data, np.transpose(w1))
     s = sigmoid(net_first)
 
