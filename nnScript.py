@@ -56,6 +56,26 @@ def preprocess():
     - feature selection"""
 
     mat = loadmat("mnist_all.mat")  # loads the MAT object as a Dictionary
+    total_data = []
+    for i in range(10):
+        total_data.append(np.vstack([mat[f"train{i}"]]))
+    total_label = []
+    for i in range(10):
+        total_label.append(np.hstack([np.full(mat[f"train{i}"].shape[0], i)]))
+
+    total_data = np.vstack(total_data)
+    total_label = np.hstack(total_label)
+
+    samples = total_data.shape[0]
+    indices = np.random.permutation(samples)
+    validation_indices = indices[50000:]
+    training_indices = indices[:50000]
+
+    train_data = total_data[training_indices]
+    train_label = total_label[training_indices]
+
+    validation_data = total_data[validation_indices]
+    validation_label = total_label[validation_indices]
 
     # Split the training sets into two sets of 50000 randomly sampled training examples and 10000 validation examples.
     # Your code here.
