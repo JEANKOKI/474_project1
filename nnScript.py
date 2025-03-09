@@ -25,12 +25,23 @@ def sigmoid(z):
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
     sig = []
+
+    z = np.clip(z, -500, 500)
+    return 1 / (1 + np.exp(-z))
+
+
+"""
     if np.isscalar(z):
         return 1 / (1 + np.exp(-z))
+
     for i in z:
+        # if i >= 0:
         val = 1 / (1 + np.exp(-i))
+        # else:
+        # val = np.exp(i) / (1 + np.exp(i))
         sig.append(val)
     return np.array(sig)  # your code here
+"""
 
 
 def preprocess():
@@ -90,8 +101,8 @@ def preprocess():
         train_label,
         validation_data,
         validation_label,
-        test_data,
-        test_label,
+        # test_data,
+        # test_label,
     )
 
 
@@ -100,6 +111,7 @@ def nnObjFunction(params, *args):
     %   likelihood error function with regularization) given the parameters
     %   of Neural Networks, thetraining data, their corresponding training
     %   labels and lambda - regularization hyper-parameter.
+
 
     % Input:
     % params: vector of weights of 2 matrices w1 (weights of connections from
@@ -124,6 +136,7 @@ def nnObjFunction(params, *args):
     % Use backpropagation algorithm to compute the gradient of error function
     % for each weights in weight matrices.
 
+
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % reshape 'params' vector into 2 matrices of weight w1 and w2
     % w1: matrix of weights of connections from input layer to hidden layers.
@@ -140,16 +153,48 @@ def nnObjFunction(params, *args):
     obj_val = 0
 
     # Your code here
-    #
-    #
-    #
-    #
-    #
+    n = training_data.shape[0]
+    training_data = np.hstack((training_data, np.ones((n, 1))))
 
+    z = np.dot(training_data, w1.T)
+    z = sigmoid(z)
+    z = np.hstack((z, np.ones((n, 1))))
+
+    o = np.dot(z, w2.T)
+    o = sigmoid(o)
+
+    # what i did here was get the input and output layer activations^
+    y = np.zeros((n, n_class))
+    for i in range(n):
+        y[i, int(training_label[i])] = 1
+
+    # this is for one hot encoding  ^
+
+    original_error = -np.sum(y * np.log(o) + (1 - y) * np.log(1 - o)) / n
+    w1_sum_squares = np.sum(w1[:, :n_input] ** 2)
+    w2_sum_squares = np.sum(w2[:, :n_hidden] ** 2)
+
+    regularization = (lambdaval / (2 * n)) * (w1_sum_squares + w2_sum_squares)
+
+    obj_val = original_error + regularization
+
+    delta_o = o - y
+
+    delta_z = (1 - z) * z * np.dot(delta_o, w2)
+
+    delta_z = delta_z[:, :-1]
+
+    gradient_w1 = np.dot(delta_z.T, training_data) / n
+    gradient_w2 = np.dot(delta_o.T, z) / n
+
+    gradient_w1[:, :-1] += (lambdaval / n) * w1[:, :-1]
+    gradient_w2[:, :-1] += (lambdaval / n) * w2[:, :-1]
+
+    # computing gradients and adding regulaiztion term^
+    # we do not want to include the bias term ^
     # Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     # you would use code similar to the one below to create a flat array
-    # obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    obj_grad = np.array([])
+    obj_grad = np.concatenate((gradient_w1.flatten(), gradient_w2.flatten()), 0)
 
     return (obj_val, obj_grad)
 
@@ -171,14 +216,15 @@ def nnPredict(w1, w2, data):
     % Output:
     % label: a column vector of predicted labels"""
 
-    #labels = np.array([])
+    # labels = np.array([])
     # Your code here
 
-    bias = np.ones((data.shape[0],1))
-    data =np.hstack((bias,data))
+   
+    data = np.hstack((data, np.ones((data.shape[0],1))))
     net_first = np.dot(data, np.transpose(w1))
     s = sigmoid(net_first)
 
+    s = np.hstack((s, np.ones((s.shape[0],1))))
     net_second = np.dot(s, np.transpose(w2))
 
     final_s = sigmoid(net_second)
@@ -194,8 +240,8 @@ if __name__ == "__main__":
         train_label,
         validation_data,
         validation_label,
-        test_data,
-        test_label,
+        # test_data,
+        # test_label,
     ) = preprocess()
 
     #  Train Neural Network
@@ -204,7 +250,7 @@ if __name__ == "__main__":
     n_input = train_data.shape[1]
 
     # set the number of nodes in hidden unit (not including bias unit)
-    n_hidden = 50
+    n_hidden = 83
 
     # set the number of nodes in output unit
     n_class = 10
@@ -217,7 +263,7 @@ if __name__ == "__main__":
     initialWeights = np.concatenate((initial_w1.flatten(), initial_w2.flatten()), 0)
 
     # set the regularization hyper-parameter
-    lambdaval = 0
+    lambdaval = 55
 
     args = (n_input, n_hidden, n_class, train_data, train_label, lambdaval)
 
@@ -259,12 +305,13 @@ if __name__ == "__main__":
         + "%"
     )
 
-    predicted_label = nnPredict(w1, w2, test_data)
+    # predicted_label = nnPredict(w1, w2, test_data)
 
     # find the accuracy on Validation Dataset
-
+"""
     print(
         "\n Test set Accuracy:"
         + str(100 * np.mean((predicted_label == test_label).astype(float)))
         + "%"
     )
+"""
