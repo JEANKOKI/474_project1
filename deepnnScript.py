@@ -13,6 +13,8 @@ import pickle
 # Create model
 # Add more hidden layers to create deeper networks
 # Remember to connect the final hidden layer to the out_layer
+
+"""
 def create_multilayer_perceptron():
 
     class net(nn.Module):
@@ -37,6 +39,108 @@ def create_multilayer_perceptron():
             return x
 
     return net()
+"""
+
+
+
+def create_multilayer_perceptron():
+    class Net(nn.Module):
+        def __init__(self):
+            super().__init__()
+
+            n_input = 2376  # Input features
+            n_hidden = 256  # Neurons per hidden layer
+            n_classes = 2   # Output classes
+
+            # Define layers
+            self.hidden_layers = nn.ModuleList([
+                nn.Linear(n_input, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden)
+            ])
+
+            self.out_layer = nn.Linear(n_hidden, n_classes)
+
+        def forward(self, x):
+            for layer in self.hidden_layers:
+                x = F.relu(layer(x))  # Apply ReLU activation
+            x = self.out_layer(x)  # Final output layer
+            return x
+
+    return Net()
+    
+
+
+
+
+""" Deep nn with 5 hidden layers 
+def create_multilayer_perceptron():
+    class Net(nn.Module):
+        def __init__(self):
+            super().__init__()
+
+            n_input = 2376  # Input features
+            n_hidden = 256  # Neurons per hidden layer
+            n_classes = 2   # Output classes
+
+            # Define layers
+            self.hidden_layers = nn.ModuleList([
+                nn.Linear(n_input, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden)
+            ])
+
+            self.out_layer = nn.Linear(n_hidden, n_classes)
+
+        def forward(self, x):
+            for layer in self.hidden_layers:
+                x = F.relu(layer(x))  # Apply ReLU activation
+            x = self.out_layer(x)  # Final output layer
+            return x
+
+    return Net()
+"""
+
+
+""" deepNN with 7 hidden layers 
+def create_multilayer_perceptron():
+    class Net(nn.Module):
+        def __init__(self):
+            super().__init__()
+
+            n_input = 2376  # Input features
+            n_hidden = 256  # Neurons per hidden layer
+            n_classes = 2   # Output classes
+
+            # Define layers
+            self.hidden_layers = nn.ModuleList([
+                nn.Linear(n_input, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden),
+                nn.Linear(n_hidden, n_hidden)
+            ])
+
+            self.out_layer = nn.Linear(n_hidden, n_classes)
+
+        def forward(self, x):
+            for layer in self.hidden_layers:
+                x = F.relu(layer(x))  # Apply ReLU activation
+            x = self.out_layer(x)  # Final output layer
+            return x
+
+    return Net()
+
+
+
+"""
+
+
+
 
 # Do not change this
 def preprocess():
