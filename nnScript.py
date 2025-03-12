@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
+import matplotlib.pyplot as plt
 
 
 def initializeWeights(n_in, n_out):
@@ -315,3 +316,13 @@ if __name__ == "__main__":
         + "%"
     )
 """
+
+
+
+import pickle
+
+train_accuracies, val_accuracies = train_and_evaluate_nn(lambda_vals, train_data, train_label, validation_data, validation_label)
+
+# Save to file
+with open("params.pkl", "wb") as f:
+    pickle.dump((train_accuracies, val_accuracies), f)
