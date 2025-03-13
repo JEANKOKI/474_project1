@@ -77,10 +77,10 @@ def preprocess():
     total_data = np.vstack(total_data)
     total_label = np.hstack(total_label)
 
-    samples = total_data.shape[0]
-    indices = np.random.permutation(samples)
-    validation_indices = indices[50000:]
-    training_indices = indices[:50000]
+    samples =total_data.shape[0]
+    indices =np.random.permutation(samples)
+    validation_indices =indices[50000:]
+    training_indices =indices[:50000]
 
     train_data = total_data[training_indices]
     train_label = total_label[training_indices]
@@ -93,10 +93,10 @@ def preprocess():
 
     # Feature selection
     # Your code here.
-    feature_selected = np.std(train_data, axis=0) > 0
-    train_data = train_data[:, feature_selected]
-    validation_data = validation_data[:, feature_selected]
-
+    feature_selected =np.std(train_data, axis=0) > 0
+    train_data =   train_data[:, feature_selected]
+    validation_data =validation_data[:, feature_selected]
+   
     print("preprocess done")
 
     return (
@@ -151,23 +151,25 @@ def nnObjFunction(params, *args):
 
     n_input, n_hidden, n_class, training_data, training_label, lambdaval = args
 
-    w1 = params[0 : n_hidden * (n_input + 1)].reshape((n_hidden, (n_input + 1)))
-    w2 = params[(n_hidden * (n_input + 1)) :].reshape((n_class, (n_hidden + 1)))
+    w1 = params[0:n_hidden *  (n_input + 1)].reshape((n_hidden , (n_input + 1)))
+    w2 = params[( n_hidden * (n_input + 1)) :].reshape((n_class, (n_hidden + 1)))
     obj_val = 0
 
     # Your code here
     n = training_data.shape[0]
-    training_data = np.hstack((training_data, np.ones((n, 1))))
+    training_data =   np.hstack((training_data, np.ones((n, 1))))
 
     z = np.dot(training_data, w1.T)
     z = sigmoid(z)
     z = np.hstack((z, np.ones((n, 1))))
+ 
 
-    o = np.dot(z, w2.T)
+
+    o =  np.dot(z, w2.T)
     o = sigmoid(o)
 
     # what i did here was get the input and output layer activations^
-    y = np.zeros((n, n_class))
+    y =  np.zeros((n, n_class))
     for i in range(n):
         y[i, int(training_label[i])] = 1
 
@@ -177,11 +179,14 @@ def nnObjFunction(params, *args):
     w1_sum_squares = np.sum(w1[:, :n_input] ** 2)
     w2_sum_squares = np.sum(w2[:, :n_hidden] ** 2)
 
+    
+    
     regularization = (lambdaval / (2 * n)) * (w1_sum_squares + w2_sum_squares)
 
     obj_val = original_error + regularization
 
     delta_o = o - y
+
 
     delta_z = (1 - z) * z * np.dot(delta_o, w2)
 
@@ -227,7 +232,8 @@ def nnPredict(w1, w2, data):
     s = sigmoid(net_first)
 
     s = np.hstack((s, np.ones((s.shape[0], 1))))
-    net_second = np.dot(s, np.transpose(w2))
+    
+    net_second =  np.dot(s, np.transpose(w2))
 
     final_s = sigmoid(net_second)
     labels = np.argmax(final_s, axis=1)
@@ -310,6 +316,7 @@ if __name__ == "__main__":
     # predicted_label = nnPredict(w1, w2, test_data)
 
     # find the accuracy on Validation Dataset
+   
 """
     print(
         "\n Test set Accuracy:"
