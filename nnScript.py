@@ -252,7 +252,7 @@ if __name__ == "__main__":
     n_input = train_data.shape[1]
 
     # set the number of nodes in hidden unit (not including bias unit)
-    n_hidden = 83
+    n_hidden = 80
 
     # set the number of nodes in output unit
     n_class = 10
