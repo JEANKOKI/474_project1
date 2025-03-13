@@ -93,6 +93,9 @@ def preprocess():
 
     # Feature selection
     # Your code here.
+    feature_selected = np.std(train_data, axis=0) > 0
+    train_data = train_data[:, feature_selected]
+    validation_data = validation_data[:, feature_selected]
 
     print("preprocess done")
 
@@ -219,12 +222,11 @@ def nnPredict(w1, w2, data):
     # labels = np.array([])
     # Your code here
 
-   
-    data = np.hstack((data, np.ones((data.shape[0],1))))
+    data = np.hstack((data, np.ones((data.shape[0], 1))))
     net_first = np.dot(data, np.transpose(w1))
     s = sigmoid(net_first)
 
-    s = np.hstack((s, np.ones((s.shape[0],1))))
+    s = np.hstack((s, np.ones((s.shape[0], 1))))
     net_second = np.dot(s, np.transpose(w2))
 
     final_s = sigmoid(net_second)
